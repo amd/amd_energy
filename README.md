@@ -25,6 +25,11 @@ Supported chips:
 
 Author: Naveen Krishna Chatradhi <nchatrad@amd.com>
 
+Security: CVE-2020-12912
+------------------------------
+
+Refer 2020 tab in https://www.amd.com/en/corporate/product-security#paragraph-313561 for details
+
 Description
 -----------
 
