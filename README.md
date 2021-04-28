@@ -7,7 +7,7 @@ Supported chips:
 
 * AMD Family 17h Processors: Model 30h
 
-* AMD Family 19h Processors: Model 01h
+* AMD Family 19h Processors: Model 01h and 30h
 
   Prefix: 'amd_energy'
 
@@ -22,6 +22,10 @@ Supported chips:
   - Preliminary Processor Programming Reference (PPR) for AMD Family 17h Model 31h, Revision B0 Processors
 
 	https://developer.amd.com/wp-content/resources/56176_ppr_Family_17h_Model_71h_B0_pub_Rev_3.06.zip
+
+  - Preliminary Processor Programming Reference (PPR) for AMD Family 19h Model 1h, Revision B1 Processors
+
+	https://www.amd.com/system/files/TechDocs/55898_pub.zip
 
 Author: Naveen Krishna Chatradhi <nchatrad@amd.com>
 
