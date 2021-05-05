@@ -162,3 +162,39 @@ The Energy module can also be loaded using insmod if the module was not
 installed:
 
 #> sudo insmod ./amd_energy.ko
+
+
+DKMS support
+------------
+
+Building Module with running version of kernel
+
+Add the module to DKMS tree:
+#> sudo dkms add ../amd_energy
+
+Build the module using DKMS:
+#> sudo dkms build -m amd_energy/1.0
+
+Install the module using DKMS:
+#> sudo dkms install --force amd_energy/1.0
+
+Load the module:
+#> sudo modprobe amd_energy
+
+Building Module with specific version of kernel
+
+Add the module to DKMS tree:
+#> sudo dkms add ../amd_energy
+
+Build the module using DKMS:
+#> sudo dkms build amd_energy/1.0 -k linux_version
+
+Install the module using DKMS:
+#> sudo dkms install --force amd_energy/1.0 -k linux_version
+Module is built: /lib/modules/linux_version/updates/dkms/
+
+Notes: It is required to have specific linux verion header in /usr/src
+
+To remove module from dkms tree
+#> sudo dkms remove -m amd_energy/1.0 --all
+#> sudo rm -rf /usr/src/amd_energy-1.0/
