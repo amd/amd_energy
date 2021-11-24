@@ -214,6 +214,7 @@ static int amd_create_sensor(struct device *dev,
 			     enum hwmon_sensor_types type, u32 config)
 {
 	struct hwmon_channel_info *info = &data->energy_info;
+	struct cpuinfo_x86 *c = &boot_cpu_data;
 	struct sensor_accumulator *accums;
 	int i, num_siblings, cpus, sockets;
 	u32 *s_config;
@@ -222,13 +223,17 @@ static int amd_create_sensor(struct device *dev,
 	/* Identify the number of siblings per core */
 	num_siblings = ((cpuid_ebx(0x8000001e) >> 8) & 0xff) + 1;
 
-	sockets = num_possible_nodes();
-
 	/*
 	 * Energy counter register is accessed at core level.
 	 * Hence, filterout the siblings.
 	 */
 	cpus = num_present_cpus() / num_siblings;
+
+	/*
+	 * c->x86_max_cores is the linux count of physical cores
+	 * total physical cores/ core per socket gives total number of sockets.
+	 */
+	sockets = cpus / c->x86_max_cores;
 
 	s_config = devm_kcalloc(dev, cpus + sockets + 1,
 				sizeof(u32), GFP_KERNEL);
