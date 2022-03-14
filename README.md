@@ -9,6 +9,8 @@ Supported chips:
 
 * AMD Family 19h Processors: Model 01h and 30h
 
+* AMD Family 19h Processors: Model 01h and 10h
+
   Prefix: 'amd_energy'
 
   Addresses used:  RAPL MSRs
@@ -102,6 +104,10 @@ B. course grain (0.125 milli J)
 
 A socket and core energy read would return the current register
 value added to the respective energy accumulator.
+
+On newer EPYC CPUs with 64bit RAPL energy MSRs, software accumulation
+of energy counters is not required. Hence, accumulation is enabled
+only on select EPYC CPUs with 32bit RAPL MSRs.
 
 Sysfs attributes
 ----------------

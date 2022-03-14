@@ -58,6 +58,7 @@ struct amd_energy_data {
 	int nr_socks;
 	int core_id;
 	char (*label)[10];
+	bool do_not_accum;
 };
 
 static int amd_energy_read_labels(struct device *dev,
@@ -133,13 +134,15 @@ static void amd_add_delta(struct amd_energy_data *data, int ch,
 	rdmsrl_safe_on_cpu(cpu, reg, &input);
 	input &= AMD_ENERGY_MASK;
 
-	accum = &data->accums[ch];
-	if (input >= accum->prev_value)
-		input += accum->energy_ctr -
-				accum->prev_value;
-	else
-		input += UINT_MAX - accum->prev_value +
-				accum->energy_ctr;
+	if (!data->do_not_accum) {
+		accum = &data->accums[ch];
+		if (input >= accum->prev_value)
+			input += accum->energy_ctr -
+					accum->prev_value;
+		else
+			input += UINT_MAX - accum->prev_value +
+					accum->energy_ctr;
+	}
 
 	/* Energy consumed = (1/(2^ESU) * RAW * 1000000UL) μJoules */
 	*val = div64_ul(input * 1000000UL, BIT(data->energy_units));
@@ -263,6 +266,13 @@ static int amd_create_sensor(struct device *dev,
 	return 0;
 }
 
+static const struct x86_cpu_id bit32_rapl_cpus[] = {
+	X86_MATCH_VENDOR_FAM_MODEL(AMD, 0x17, 0x31, NULL),
+	X86_MATCH_VENDOR_FAM_MODEL(AMD, 0x19, 0x01, NULL),
+	X86_MATCH_VENDOR_FAM_MODEL(AMD, 0x19, 0x30, NULL),
+	{}
+};
+
 static int amd_energy_probe(struct platform_device *pdev)
 {
 	struct device *hwmon_dev;
@@ -303,6 +313,15 @@ static int amd_energy_probe(struct platform_device *pdev)
 	data->timeout_ms = 1000 *
 			   BIT(min(28, 31 - data->energy_units)) / 250;
 
+	/*
+	 * For AMD platforms with 64-bit RAPL MSR registers, accumulation
+	 * of the energy counters are not necessary.
+	 */
+	if (!x86_match_cpu(bit32_rapl_cpus)) {
+		data->do_not_accum = true;
+		return 0;
+	}
+
 	data->wrap_accumulate = kthread_run(energy_accumulator, data,
 					    "%s", dev_name(hwmon_dev));
 	return PTR_ERR_OR_ZERO(data->wrap_accumulate);
@@ -338,6 +357,7 @@ static struct platform_device *amd_energy_platdev;
 static const struct x86_cpu_id cpu_ids[] __initconst = {
 	X86_MATCH_VENDOR_FAM_MODEL(AMD, 0x17, 0x31, NULL),
 	X86_MATCH_VENDOR_FAM_MODEL(AMD, 0x19, 0x01, NULL),
+	X86_MATCH_VENDOR_FAM_MODEL(AMD, 0x19, 0x10, NULL),
 	X86_MATCH_VENDOR_FAM_MODEL(AMD, 0x19, 0x30, NULL),
 	{}
 };
