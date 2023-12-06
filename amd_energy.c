@@ -107,8 +107,10 @@ static void read_accumulate(struct amd_energy_data *data)
 	int sock, scpu, cpu;
 
 	for (sock = 0; sock < data->nr_socks; sock++) {
-		scpu = cpumask_first_and(cpu_online_mask,
-					 cpumask_of_node(sock));
+
+		cpu = cpumask_first_and(cpu_online_mask,
+                            cpumask_of_node
+                            (channel - data->nr_cpus));
 
 		accumulate_delta(data, data->nr_cpus + sock,
 				 scpu, ENERGY_PKG_MSR);
@@ -159,9 +161,9 @@ static int amd_energy_read(struct device *dev,
 	int cpu;
 
 	if (channel >= data->nr_cpus) {
-		cpu = cpumask_first_and(cpu_online_mask,
-					cpumask_of_node
-					(channel - data->nr_cpus));
+    cpu = cpumask_first_and(cpu_online_mask,
+                            topology_die_cpumask
+                            ((data->nr_cpus/data->nr_socks) * (channel - data->nr_cpus) ));
 		reg = ENERGY_PKG_MSR;
 	} else {
 		cpu = channel;
