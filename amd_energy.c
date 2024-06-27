@@ -133,9 +133,9 @@ static void amd_add_delta(struct amd_energy_data *data, int ch,
 
 	mutex_lock(&data->lock);
 	rdmsrl_safe_on_cpu(cpu, reg, &input);
-	input &= AMD_ENERGY_MASK;
 
 	if (!data->do_not_accum) {
+		input &= AMD_ENERGY_MASK;
 		accum = &data->accums[ch];
 		if (input >= accum->prev_value)
 			input += accum->energy_ctr -
