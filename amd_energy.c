@@ -325,8 +325,13 @@ static int amd_energy_probe(struct platform_device *pdev)
 	 * of the energy counters are not necessary.
 	 */
 	if (!x86_match_cpu(bit32_rapl_cpus)) {
-		data->do_not_accum = true;
-		return 0;
+		if (boot_cpu_data.x86 == 0x19 &&
+		    boot_cpu_data.x86_model == 0x0) {
+			data->do_not_accum = false;
+		} else {
+			data->do_not_accum = true;
+			return 0;
+		}
 	}
 
 	data->wrap_accumulate = kthread_run(energy_accumulator, data,
@@ -366,6 +371,12 @@ static const struct x86_cpu_id cpu_ids[] __initconst = {
 	X86_MATCH_VENDOR_FAM_MODEL(AMD, 0x19, 0x01, NULL),
 	X86_MATCH_VENDOR_FAM_MODEL(AMD, 0x19, 0x10, NULL),
 	X86_MATCH_VENDOR_FAM_MODEL(AMD, 0x19, 0x30, NULL),
+	X86_MATCH_VENDOR_FAM_MODEL(AMD, 0x19, 0x11, NULL),
+	X86_MATCH_VENDOR_FAM_MODEL(AMD, 0x19, 0xA0, NULL),
+	X86_MATCH_VENDOR_FAM_MODEL(AMD, 0x19, 0x90, NULL),
+	X86_MATCH_VENDOR_FAM_MODEL(AMD, 0x1A, 0x10, NULL),
+	X86_MATCH_VENDOR_FAM_MODEL(AMD, 0x1A, 0x02, NULL),
+	X86_MATCH_VENDOR_FAM_MODEL(AMD, 0x1A, 0x11, NULL),
 	{}
 };
 MODULE_DEVICE_TABLE(x86cpu, cpu_ids);
@@ -374,8 +385,11 @@ static int __init amd_energy_init(void)
 {
 	int ret;
 
-	if (!x86_match_cpu(cpu_ids))
-		return -ENODEV;
+	if (!x86_match_cpu(cpu_ids)) {
+		if (!((boot_cpu_data.x86 == 0x1A || boot_cpu_data.x86 == 0x19) &&
+		    (boot_cpu_data.x86_model == 0x0)))
+			return -ENODEV;
+	}
 
 	ret = platform_driver_register(&amd_energy_driver);
 	if (ret)
