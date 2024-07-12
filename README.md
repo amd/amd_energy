@@ -11,6 +11,10 @@ Supported chips:
 
 * AMD Family 19h Processors: Model 01h and 10h
 
+* AMD Family 19h Processors: Model 00h, 11h, A0h, 90h
+
+* AMD Family 1Ah Processors: Model 00h, 02h, 11h, 10h
+
   Prefix: 'amd_energy'
 
   Addresses used:  RAPL MSRs
