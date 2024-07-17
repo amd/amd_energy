@@ -70,7 +70,7 @@ reading those registers from the sibling threads would result
 in duplicate values. Hence, energy counter entries are not
 populated for the siblings.
 
-Energy Caluclation
+Energy Calculation
 ------------------
 
 Energy information (in Joules) is based on the multiplier,
@@ -98,7 +98,7 @@ The Core energy register may wrap around after several days.
 To improve the wrap around time, a kernel thread is implemented
 to accumulate the socket energy counters and one core energy counter
 per run to a respective 64-bit counter. The kernel thread starts
-running during probe, wakes up every 100secs and stops running
+running during probe, wakes up every 100 secs and stops running
 when driver is removed.
 
 Frequency of the accumulator thread is set during the probe
@@ -203,7 +203,7 @@ Install the module using DKMS:
 #> sudo dkms install --force amd_energy/1.0 -k linux_version
 Module is built: /lib/modules/linux_version/updates/dkms/
 
-Notes: It is required to have specific linux verion header in /usr/src
+Notes: It is required to have specific linux version header in /usr/src
 
 To remove module from dkms tree
 #> sudo dkms remove -m amd_energy/1.0 --all
