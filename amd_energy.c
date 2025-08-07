@@ -345,14 +345,20 @@ static int amd_energy_probe(struct platform_device *pdev)
 	return PTR_ERR_OR_ZERO(data->wrap_accumulate);
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 11, 0)
+static void amd_energy_remove(struct platform_device *pdev)
+#else
 static int amd_energy_remove(struct platform_device *pdev)
+#endif
 {
 	struct amd_energy_data *data = dev_get_drvdata(&pdev->dev);
 
 	if (data && data->wrap_accumulate)
 		kthread_stop(data->wrap_accumulate);
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 11, 0)
 	return 0;
+#endif
 }
 
 static const struct platform_device_id amd_energy_ids[] = {
