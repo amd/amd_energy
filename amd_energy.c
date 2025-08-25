@@ -236,7 +236,7 @@ static int amd_create_sensor(struct device *dev,
 	 * c->x86_max_cores is the linux count of physical cores
 	 * total physical cores/ core per socket gives total number of sockets.
 	 */
-#if LINUX_VERSION_CODE <= KERNEL_VERSION(6, 8, 0)
+#if LINUX_VERSION_CODE <= KERNEL_VERSION(6, 9, 0)
 	struct cpuinfo_x86 *c = &boot_cpu_data;
 	sockets = cpus / c->x86_max_cores;
 #else
